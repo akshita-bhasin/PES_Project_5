@@ -1,0 +1,7 @@
+core_cm0plus.h:745:22:NVIC_EnableIRQ	16	static
+fsl_common.h:212:20:EnableIRQ	16	static
+fsl_rtc.h:234:20:RTC_EnableInterrupts	16	static
+fsl_rtc.h:308:20:RTC_StartTimer	16	static
+rtc.c:91:6:RTC_Init_Clock	40	static
+rtc.c:104:6:RTC_Time	16	static
+rtc.c:111:6:RTC_Seconds_IRQHandler	8	static

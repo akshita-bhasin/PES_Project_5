@@ -5,16 +5,37 @@
  *      Author: madhu
  */
 
+
 #ifndef CIRCULARBUFFER_H_
 #define CIRCULARBUFFER_H_
 
+#include <stdbool.h>
+#include <stdint.h>
+#include <stdlib.h>
+
 typedef struct {
-	uint8_t* const buffer;
-	size_t head;
-	size_t tail;
+	uint8_t* buffer;
+	uint8_t * head;
+	uint8_t * tail;
 	size_t max; //of the buffer
+	size_t count;
 	bool full;
 }circ_bbuf_t;
+
+typedef enum
+{
+    buffer_init_success=0,
+    buffer_init_fail,
+    buffer_empty,
+    buffer_not_empty,
+    buffer_full,
+	buffer_not_full,
+	buffer_null,
+    buffer_success,
+	buffer_freed
+}buffer_errors;
+
+//typedef struct circ_bbuf_t circ_bbuf_t;
 
 typedef circ_bbuf_t* cbuf_handle_t;
 
@@ -25,7 +46,7 @@ cbuf_handle_t circular_buf_init(uint8_t* buffer, size_t size);
 
 /// Free a circular buffer structure.
 /// Does not free data buffer; owner is responsible for that
-void circular_buf_free(cbuf_handle_t cbuf);
+buffer_errors circular_buf_free(cbuf_handle_t cbuf);
 
 /// Reset the circular buffer to empty, head == tail
 void circular_buf_reset(cbuf_handle_t cbuf);
@@ -36,23 +57,27 @@ void circular_buf_reset(cbuf_handle_t cbuf);
 
 /// Put Version 2 rejects new data if the buffer is full
 /// Returns 0 on success, -1 if buffer is full
-int circular_buf_put2(cbuf_handle_t cbuf, uint8_t data);
+buffer_errors circular_buf_put2(cbuf_handle_t cbuf, uint8_t data);
 
 /// Retrieve a value from the buffer
 /// Returns 0 on success, -1 if the buffer is empty
-int circular_buf_get(cbuf_handle_t cbuf, uint8_t * data);
+buffer_errors circular_buf_get(cbuf_handle_t cbuf, uint8_t * data);
 
 /// Returns true if the buffer is empty
-bool circular_buf_empty(cbuf_handle_t cbuf);
+buffer_errors circular_buf_empty(cbuf_handle_t cbuf);
 
 /// Returns true if the buffer is full
-bool circular_buf_full(cbuf_handle_t cbuf);
+buffer_errors circular_buf_full(cbuf_handle_t cbuf);
 
 /// Returns the maximum capacity of the buffer
 size_t circular_buf_capacity(cbuf_handle_t cbuf);
 
 /// Returns the current number of elements in the buffer
-size_t circular_buf_size(cbuf_handle_t cbuf);
+buffer_errors circular_buf_size(cbuf_handle_t cbuf);
+
+buffer_errors circular_buf_initialized(cbuf_handle_t cbuf);
+
+
 
 
 #endif /* CIRCULARBUFFER_H_ */
