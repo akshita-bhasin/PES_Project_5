@@ -16,15 +16,34 @@
 
 void unit_test_cases(void)
 {
+	uint8_t a=1;
 	cbuf_handle_t test_buffer;
 	test_buffer= circular_buf_init(4);
 	//Test case for allocate bytes
-	UCUNIT_TestcaseBegin("Testing buffer put\r\n");
+	UCUNIT_TestcaseBegin("Testing circular buffer - put\r\n");
+	for(uint8_t i=0; i<4; i++)
+	{
+		UCUNIT_CheckIsEqual(circular_buf_put2(test_buffer, i), buffer_success);
+	}
+	UCUNIT_CheckIsEqual(circular_buf_put2(test_buffer, a), buffer_full);
+	UCUNIT_TestcaseEnd();
+
+	UCUNIT_TestcaseBegin("Testing circular buffer - get\r\n");
 	for(uint8_t i=0; i<10; i++)
 	{
-		if(circular_buf_put2(test_buffer, i) == buffer_full)
-			break;
-	}/*
+		UCUNIT_CheckIsEqual(circular_buf_get(test_buffer, &i), buffer_success);
+	}
+	UCUNIT_CheckIsEqual(circular_buf_get(test_buffer, &a), buffer_empty);
+	UCUNIT_TestcaseEnd();
+
+	UCUNIT_TestcaseBegin("Testing circular buffer put again\r\n");
+	for(uint8_t i=0; i<10; i++)
+	{
+		UCUNIT_CheckIsEqual(circular_buf_put2(test_buffer, i), buffer_success);
+	}
+	UCUNIT_CheckIsEqual(circular_buf_put2(test_buffer, a), buffer_full);
+	UCUNIT_TestcaseEnd();
+	/*
 	I2C_write_byte(0x01, 0x62);
 	delay_loop(10000);
 	uint8_t data = i2c_read_byte(0x90, 0x01);

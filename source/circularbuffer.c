@@ -37,18 +37,17 @@ int circ_bbuf_pop(circ_bbuf_t c*,uint8_t *data)
 }
 */
 
-cbuf_handle_t circular_buf_init(uint8_t* buffer, size_t size)
+cbuf_handle_t circular_buf_init(size_t size)
 {
 //	assert(buffer && size);
-
-	cbuf_handle_t cbuf;
-	//cbuf->buffer = (uint8_t *)malloc(sizeof(uint8_t*)size);
+	uint8_t* buffer_init;
+	cbuf_handle_t cbuf = (circ_bbuf_t*)malloc(sizeof(circ_bbuf_t));
 //	assert(cbuf);
-
-//	cbuf->buffer = buffer;
+	buffer_init = (uint8_t*)malloc(sizeof(uint8_t)*size);
+	cbuf->buffer = buffer_init;
 	cbuf->max = size;
-	cbuf->head = buffer;
-	cbuf->tail = buffer;
+	cbuf->head = buffer_init;
+	cbuf->tail = buffer_init;
 	cbuf->count = 0;
 	cbuf->full = false;
 //	circ_bbuf_t(cbuf);
@@ -112,7 +111,7 @@ buffer_errors circular_buf_initialized(cbuf_handle_t cbuf)
 
 size_t circular_buf_capacity(cbuf_handle_t cbuf)
 {
-	assert(cbuf);
+	//assert(cbuf);
 
 	return cbuf->max;
 }
@@ -235,7 +234,7 @@ buffer_errors circular_buf_get(cbuf_handle_t cbuf, uint8_t * data) //pop
     	return buffer_null;
     else if(circular_buf_empty(cbuf) == buffer_empty)//cbuf->count == cbuf->max)
     		return buffer_empty;
-    else if(cbuf->tail > ((cbuf->buffer)+(cbuf->max)))
+    else if(cbuf->tail >= ((cbuf->buffer)+(cbuf->max)))
     {
     	*data = *(cbuf->tail);
     	cbuf->tail = cbuf->buffer;

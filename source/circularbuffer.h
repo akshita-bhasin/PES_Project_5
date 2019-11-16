@@ -17,7 +17,7 @@ typedef struct {
 	uint8_t* buffer;
 	uint8_t * head;
 	uint8_t * tail;
-	size_t max; //of the buffer
+	uint8_t max; //of the buffer
 	size_t count;
 	bool full;
 }circ_bbuf_t;
@@ -42,7 +42,7 @@ typedef circ_bbuf_t* cbuf_handle_t;
 
 /// Pass in a storage buffer and size
 /// Returns a circular buffer handle
-cbuf_handle_t circular_buf_init(uint8_t* buffer, size_t size);
+cbuf_handle_t circular_buf_init(size_t size);
 
 /// Free a circular buffer structure.
 /// Does not free data buffer; owner is responsible for that

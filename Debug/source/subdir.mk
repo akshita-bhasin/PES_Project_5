@@ -5,31 +5,37 @@
 # Add inputs and outputs from these tool invocations to the build variables 
 C_SRCS += \
 ../source/PES_Project_5.c \
+../source/System.c \
 ../source/circularbuffer.c \
 ../source/count_characters.c \
 ../source/mtb.c \
 ../source/rtc.c \
 ../source/semihost_hardfault.c \
+../source/test.c \
 ../source/timestamp.c \
 ../source/uart.c 
 
 OBJS += \
 ./source/PES_Project_5.o \
+./source/System.o \
 ./source/circularbuffer.o \
 ./source/count_characters.o \
 ./source/mtb.o \
 ./source/rtc.o \
 ./source/semihost_hardfault.o \
+./source/test.o \
 ./source/timestamp.o \
 ./source/uart.o 
 
 C_DEPS += \
 ./source/PES_Project_5.d \
+./source/System.d \
 ./source/circularbuffer.d \
 ./source/count_characters.d \
 ./source/mtb.d \
 ./source/rtc.d \
 ./source/semihost_hardfault.d \
+./source/test.d \
 ./source/timestamp.d \
 ./source/uart.d 
 

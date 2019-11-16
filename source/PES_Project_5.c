@@ -1,33 +1,3 @@
-/*
- * Copyright 2016-2019 NXP
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without modification,
- * are permitted provided that the following conditions are met:
- *
- * o Redistributions of source code must retain the above copyright notice, this list
- *   of conditions and the following disclaimer.
- *
- * o Redistributions in binary form must reproduce the above copyright notice, this
- *   list of conditions and the following disclaimer in the documentation and/or
- *   other materials provided with the distribution.
- *
- * o Neither the name of NXP Semiconductor, Inc. nor the names of its
- *   contributors may be used to endorse or promote products derived from this
- *   software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE FOR
- * ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON
- * ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
- 
 /**
  * @file    PES_Project_5.c
  * @brief   Application entry point.
@@ -41,6 +11,7 @@
 #include "MKL25Z4.h"
 #include "uart.h"
 #include "timestamp.h"
+#include "test.h"
 /* TODO: insert other include files here. */
 
 /* TODO: insert other definitions and declarations here. */
@@ -49,7 +20,11 @@
  * @brief   Application entry point.
  */
 
+uint8_t int_flag = 0;
+uint8_t char_array[126];
 void delay(uint16_t num);
+
+char report_format[1000], timestamp_format[100];
 
 uint8_t interrupt = 0;
 uint32_t deciseconds = 0;
@@ -62,6 +37,7 @@ int main(void) {
     BOARD_InitBootPins();
     BOARD_InitBootClocks();
     BOARD_InitBootPeripherals();
+    unit_test_cases();
   	/* Init FSL debug console. */
 //    BOARD_InitDebugConsole();
 
@@ -79,19 +55,48 @@ int main(void) {
     Send_String_Poll("Hello World\n\r");
     SysTick_Config(48000000L/100L);
 
+    for(uint8_t i=0; i<126; i++)
+    	char_array[i] = 0x0;
     while(1)
     {
-/*    	if(deciseconds == 1004) {
+/*    	if((deciseconds % 6) == 0) {
     		timestamp_value = get_timestamp();
     		Send_String_Poll("Time from SysTick: \t\n\r");
-    		Send_String_Poll(timestamp_value.hour);
-    		printf("Time from SysTick: \t%d: %d: %d: %d\n\r", timestamp_value.hour, timestamp_value.minute, timestamp_value.second, timestamp_value.decisec);
-    		deciseconds = 0;
+    		sprintf(timestamp_format,"Time from SysTick: \t%d: %d: %d: %d\n\r",  timestamp_value.hour, timestamp_value.minute, timestamp_value.second, timestamp_value.decisec);
+    		Send_String_Poll(timestamp_format);
+    		//deciseconds = 0;
     	} */
-    	uart_echo();
+#ifdef UART_ECHO
+    	uart_echo(&charac);
+#endif
+//#ifdef UART_APPLICATION
+
+    	if(uart_echo(&charac) == 1)
+    	{
+    		if((charac>=97) && (charac<=122))
+    			char_array[charac-97]++;
+    		else if((charac>=65) && (charac<=90))
+    			char_array[charac-39]++;
+    	}
+    	if(charac == 13)
+    	{
+    		Send_String_Poll("\n\rApplication mode Character report\n\r");
+    		for(uint8_t i=0; i<126; i++)
+    		{
+    			if(char_array[i] > 0)
+    			{
+    				if((i>=0) && (i<=25))
+    					sprintf(report_format, "%c - %d; ", (i+97), char_array[i]);
+    				else if((i>=26) && (i<=51))
+    					sprintf(report_format, "%c - %d; ", (i+39), char_array[i]);
+    				Send_String_Poll(report_format);
+    			}
+    		}
+    		charac=0;
+    	}
 /*    	charac = uart0_getchar();
     	uart0_putchar(charac); */
-
+//#endif
     }
 
     return 0 ;

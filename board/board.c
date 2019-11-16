@@ -30,6 +30,7 @@
 
 #include <stdint.h>
 #include "board.h"
+//#include "fsl_debug_console.h"
 #include "fsl_common.h"
 
 /*******************************************************************************
@@ -49,8 +50,8 @@
      *  10: OSCERCLK
      *  11: MCGIRCCLK
      */
- //   CLOCK_SetLpsci0Clock(1);
+/*    CLOCK_SetLpsci0Clock(1);
 
- //   uartClkSrcFreq = BOARD_DEBUG_UART_CLK_FREQ;
-    //DbgConsole_Init(BOARD_DEBUG_UART_BASEADDR, BOARD_DEBUG_UART_BAUDRATE, BOARD_DEBUG_UART_TYPE, uartClkSrcFreq);
-//}
+    uartClkSrcFreq = BOARD_DEBUG_UART_CLK_FREQ;
+    DbgConsole_Init(BOARD_DEBUG_UART_BASEADDR, BOARD_DEBUG_UART_BAUDRATE, BOARD_DEBUG_UART_TYPE, uartClkSrcFreq);
+} */

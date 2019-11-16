@@ -6,7 +6,8 @@ source/PES_Project_5.o source/PES_Project_5.d: ../source/PES_Project_5.c \
  ../CMSIS/MKL25Z4_features.h ../drivers/fsl_clock.h \
  ../drivers/fsl_common.h ../drivers/fsl_gpio.h ../board/peripherals.h \
  ../board/pin_mux.h ../board/clock_config.h ../CMSIS/MKL25Z4.h \
- ../source/uart.h ../source/circularbuffer.h ../source/timestamp.h
+ ../source/uart.h ../source/circularbuffer.h ../source/timestamp.h \
+ ../source/test.h ../source/uCUnit.h ../source/System.h
 
 ../board/board.h:
 
@@ -49,3 +50,9 @@ source/PES_Project_5.o source/PES_Project_5.d: ../source/PES_Project_5.c \
 ../source/circularbuffer.h:
 
 ../source/timestamp.h:
+
+../source/test.h:
+
+../source/uCUnit.h:
+
+../source/System.h:

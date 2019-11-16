@@ -7,13 +7,15 @@
 
 #include "uart.h"
 
-#define UART_MAX_SIZE (256)
+#define UART_MAX_SIZE (4)
 
 cbuf_handle_t TxBuffer = NULL;
 cbuf_handle_t RxBuffer = NULL;
 
 int getchar(void);
 int putchar(int c);
+
+extern uint8_t int_flag;
 
 void Init_UART0(uint32_t baud_rate) {
 	uint16_t sbr;
@@ -56,8 +58,8 @@ void Init_UART0(uint32_t baud_rate) {
 
 #if USE_UART_INTERRUPTS
 	// Enable interrupts. Listing 8.11 on p. 234
-	//TxBuffer = circular_buf_init(buffer, UART_MAX_SIZE);
-	//RxBuffer = circular_buf_init(buffer, UART_MAX_SIZE);
+	TxBuffer = circular_buf_init(UART_MAX_SIZE);
+	RxBuffer = circular_buf_init(UART_MAX_SIZE);
 	//Q_Init(&TxQ); // add circular buffer init for Tx
 	//Q_Init(&RxQ); // add circular buffer init for Rx
 
@@ -66,7 +68,7 @@ void Init_UART0(uint32_t baud_rate) {
 	NVIC_EnableIRQ(UART0_IRQn);
 
 	// Enable receive interrupts but not transmit interrupts yet
-	UART0->C2 |= UART_C2_RIE(1) | UART_C2_TIE(1);
+	UART0->C2 |= UART_C2_RIE(1);// | UART_C2_TIE(1);
 
 #endif
 
@@ -141,9 +143,9 @@ uint8_t	Get_Rx_Char(void) {
 }
 
 void UART0_IRQHandler(void) {
-	uint8_t chara; //tx_read;
+	uint8_t chara, tx_read;
 
-	if (UART0->S1 & UART0_S1_RDRF_MASK) {
+/*	if (UART0->S1 & UART0_S1_RDRF_MASK) {
 		chara = UART0->D;
 		UART0->C2 |= UART0_C2_TIE_MASK;
 		UART0->S1 &= ~UART0_S1_RDRF_MASK;
@@ -154,60 +156,70 @@ void UART0_IRQHandler(void) {
 		UART0->C2 &= ~UART0_C2_TIE_MASK;
 		UART0->S1 |= UART0_S1_RDRF_MASK;
 	}
-	//}
-/*	if ((UART0->C2 & UART0_C2_TIE_MASK) && // transmitter interrupt enabled
-				(UART0->S1 & UART0_S1_TDRE_MASK)) // tx buffer empty
-				UART0->D = ch;
+
+	if ((UART0->C2 & UART0_C2_TIE_MASK) && // transmitter interrupt enabled
+				(UART0->S1 & UART0_S1_TDRE_MASK)) { // tx buffer empty
+				UART0->D = chara;
+				UART0->S1 |= UART0_S1_RDRF_MASK;
 	} */
 
-/*	if (UART0->S1 & (UART_S1_OR_MASK |UART_S1_NF_MASK |
+	if (UART0->S1 & (UART_S1_OR_MASK |UART_S1_NF_MASK |
 		UART_S1_FE_MASK | UART_S1_PF_MASK)) {
 			// clear the error flags
 			UART0->S1 |= UART0_S1_OR_MASK | UART0_S1_NF_MASK |
 									UART0_S1_FE_MASK | UART0_S1_PF_MASK;
 			// read the data register to clear RDRF
-			ch = UART0->D;
+			chara = UART0->D;
 	}
+
 	if (UART0->S1 & UART0_S1_RDRF_MASK) {
 		// received a character
-		ch = UART0->D; */
-		/*if(circular_buf_full(RxBuffer) == buffer_not_full) // (!Q_Full(&RxQ)) { check if circular buffer not full
-			circular_buf_put2(RxBuffer, ch); // Q_Enqueue(&RxQ, ch); // dp push in circular buffer
+		chara = UART0->D;
+		if(circular_buf_full(RxBuffer) == buffer_not_full) {// (!Q_Full(&RxQ)) { check if circular buffer not full
+			circular_buf_put2(RxBuffer, chara); // Q_Enqueue(&RxQ, ch); // dp push in circular buffer
 		} else {
 			// error - queue full.
 			// discard character
-		} */
-/*	}
+		}
+		UART0->S1 &= ~UART0_S1_RDRF_MASK;
+		UART0->C2 |= UART0_C2_TIE_MASK;
+	}
 	if ( (UART0->C2 & UART0_C2_TIE_MASK) && // transmitter interrupt enabled
 			(UART0->S1 & UART0_S1_TDRE_MASK) ) { // tx buffer empty
-		UART0->D = ch;
-		// can send another character */
-		/*if(circular_buf_empty(TxBuffer) == buffer_not_empty) { // (!Q_Empty(&TxQ)) { //check if cicrular buffer not empty
-			circular_buf_get(TxBuffer, &tx_read);
-			UART0->D = tx_read;
+		//UART0->D = chara;
+		// can send another character
+		if(circular_buf_empty(TxBuffer) == buffer_not_empty) { // (!Q_Empty(&TxQ)) { //check if cicrular buffer not empty
+			if(circular_buf_get(TxBuffer, &tx_read) == buffer_success)
+				UART0->D = tx_read;
 			//UART0->D = Q_Dequeue(&TxQ); // pop from buffer
 		} else {
 			// queue is empty so disable transmitter interrupt
 			UART0->C2 &= ~UART0_C2_TIE_MASK;
 		}
-	//} */
+		UART0->S1 |= UART0_S1_RDRF_MASK;
+	}
 }
 
-void uart_echo(void)
+uint8_t uart_echo(uint8_t * data)
 {
-	uint8_t ch;
+	int_flag=0;
 #if USE_UART_INTERRUPTS
-	if((circular_buf_get(RxBuffer, &ch)) == buffer_success)
+	if((circular_buf_get(RxBuffer, data)) == buffer_success)
 	//if(cicular_buffer_put)
 	{
-		circular_buf_put2(TxBuffer, ch);
+		circular_buf_put2(TxBuffer, *data);
+		UART0->C2 |= UART0_C2_TIE_MASK;
 		//circularbufferpush
-		UART0->C2 |= UART_C2_TIE(1);
+		int_flag=1;
 	}
 #else
 	{
-			ch = uart0_getchar();
-			uart0_putchar(ch);
+		uint8_t ch;
+		ch = uart0_getchar();
+		* data = ch;
+		uart0_putchar(ch);
+		int_flag=0;
 	}
 #endif
+	return int_flag;
 }
