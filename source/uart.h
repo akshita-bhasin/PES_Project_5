@@ -14,17 +14,21 @@
 #include "circularbuffer.h"
 //#include "queue.h"
 
-#define USE_UART_INTERRUPTS 	(1) // 0 for polled UART communications, 1 for interrupt-driven
+#define USE_UART_INTERRUPTS 	(0) // 0 for polled UART communications, 1 for interrupt-driven
 #define UART_OVERSAMPLE_RATE 	(32)
 #define BUS_CLOCK 				(24e6)
 #define SYS_CLOCK				(48e6)
+
+#define UART_ECHO 				(0)
+#define UART_APPLICATION 		(1)
 
 void Init_UART0(uint32_t baud_rate);
 
 uint8_t uart0_getchar(void);
 void uart0_putchar(char ch);
 //void sendstring(char * string);
-
+uint8_t tx_available(void);
+uint8_t rx_available(void);
 /*
 void UART0_Transmit_Poll(uint8_t data);
 uint8_t UART0_Receive_Poll(void); */
@@ -39,5 +43,6 @@ uint32_t Rx_Chars_Available(void);
 uint8_t	Get_Rx_Char(void);
 
 uint8_t uart_echo(uint8_t * data);
+uint8_t uart_application(uint8_t * data);
 
 #endif /* UART_H_ */

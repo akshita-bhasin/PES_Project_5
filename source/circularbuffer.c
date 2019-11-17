@@ -3,46 +3,15 @@
  *
  *  Created on: Nov 11, 2019
  *      Author: madhu
+ *      https://embeddedartistry.com/blog/2017/05/17/creating-a-circular-buffer-in-c-and-c/
  */
 
 #include "circularbuffer.h"
 
-/*
-int circ_bbuf_push(circ_bbuf_t c*,uint8_t data)
-{
-	int next;
-	next = c->head + 1; //next is where the circular buffer will point to
-	if(next >= c->maxlen)
-		next = 0;
-	if(next == c->tail) // if head + 1 == tail, circular buffer is full
-		return -1
-	c->buffer[c->head] = data; // load data, then move
-	c->head = next;
-	return 0; //successful push
-}
-
-
-int circ_bbuf_pop(circ_bbuf_t c*,uint8_t *data)
-{
-	int next;
-
-	if(c->head == c->tail) //if head = tail buffer is empty
-		return -1;
-	next = c->tail+1; // next is where the tail will point to after the read
-	if(next >= c->maxlen)
-		next = 0;
-	*data = c->buffer[c->tail]; //read data and then move
-	c->tail = next;
-	return 0;	//return succesful read
-}
-*/
-
 cbuf_handle_t circular_buf_init(size_t size)
 {
-//	assert(buffer && size);
 	uint8_t* buffer_init;
 	cbuf_handle_t cbuf = (circ_bbuf_t*)malloc(sizeof(circ_bbuf_t));
-//	assert(cbuf);
 	buffer_init = (uint8_t*)malloc(sizeof(uint8_t)*size);
 	cbuf->buffer = buffer_init;
 	cbuf->max = size;
@@ -50,16 +19,12 @@ cbuf_handle_t circular_buf_init(size_t size)
 	cbuf->tail = buffer_init;
 	cbuf->count = 0;
 	cbuf->full = false;
-//	circ_bbuf_t(cbuf);
-
-//	assert(circular_buf_empty(cbuf));
 
 	return cbuf;
 }
 
 void circular_buf_reset(cbuf_handle_t cbuf)
 {
-    //assert(cbuf);
 
     cbuf->head = 0;
     cbuf->tail = 0;
@@ -82,9 +47,6 @@ buffer_errors circular_buf_full(cbuf_handle_t cbuf)
 		return buffer_full;
 	else
 		return buffer_not_full;
-/*	assert(cbuf);
-
-    return cbuf->full; */
 }
 
 buffer_errors circular_buf_empty(cbuf_handle_t cbuf)
@@ -95,23 +57,25 @@ buffer_errors circular_buf_empty(cbuf_handle_t cbuf)
 		return buffer_empty;
 	else
 		return buffer_not_empty;
-/*	assert(cbuf);
-
-    return (!cbuf->full && (cbuf->head == cbuf->tail)); */
 }
 
 buffer_errors circular_buf_initialized(cbuf_handle_t cbuf)
 {
-	/* Ensure the buffer pointers are all valid */
-	if(cbuf->buffer && cbuf->head && cbuf->tail)
+	if(cbuf->buffer && cbuf->head && cbuf->tail && (cbuf->count == 0))
 		return buffer_init_success;
 	else
 		return buffer_init_fail;
 }
 
+buffer_errors circular_buf_valid(cbuf_handle_t cbuf)
+{
+	if(cbuf->buffer == NULL)
+		buffer_invalid;
+	else
+		buffer_valid;
+}
 size_t circular_buf_capacity(cbuf_handle_t cbuf)
 {
-	//assert(cbuf);
 
 	return cbuf->max;
 }
@@ -132,56 +96,10 @@ buffer_errors circular_buf_size(cbuf_handle_t cbuf)
     	cbuf->max = (cbuf->max + cbuf->head - cbuf->tail);
     	return buffer_success;
     }
-
-	/*
-	assert(cbuf);
-
-	size_t size = cbuf->max;
-
-	if(!cbuf->full)
-	{
-		if(cbuf->head >= cbuf->tail)
-		{
-			size = (cbuf->head - cbuf->tail);
-		}
-		else
-		{
-			size = (cbuf->max + cbuf->head - cbuf->tail);
-		}
-	}
-
-	return size; */
 }
-
-/*
-static void advance_pointer(cbuf_handle_t cbuf)
-{
-	assert(cbuf);
-
-	if(cbuf->full)
-   	{
-		cbuf->tail = (cbuf->tail + 1) % cbuf->max;
-	}
-
-	cbuf->head = (cbuf->head + 1) % cbuf->max;
-	cbuf->full = (cbuf->head == cbuf->tail);
-}
-
-
-static void retreat_pointer(cbuf_handle_t cbuf)
-{
-	assert(cbuf);
-
-	cbuf->full = false;
-	cbuf->tail = (cbuf->tail + 1) % cbuf->max;
-}
-*/
 
 buffer_errors circular_buf_put2(cbuf_handle_t cbuf, uint8_t data) //push
 {
-//    int r = -1;
-
-//    assert(cbuf && cbuf->buffer);
 
     if(cbuf == NULL)
     	return buffer_null;
@@ -202,29 +120,6 @@ buffer_errors circular_buf_put2(cbuf_handle_t cbuf, uint8_t data) //push
     	return buffer_success;
     }
 
-    /*if(cbuf->head > cbuf->max)
-    		{
-    		}
-    	}
-    }
-    if(!circular_buf_full(cbuf))
-    {
-        cbuf->buffer[cbuf->head] = data;
-//      advance_pointer(cbuf);
-        assert(cbuf);
-
-		if(cbuf->full)
-   		{
-			cbuf->tail = (cbuf->tail + 1) % cbuf->max;
-		}
-
-		cbuf->head = (cbuf->head + 1) % cbuf->max;
-		cbuf->full = (cbuf->head == cbuf->tail);
-        r = 0;
-    }
-
-    return r;
-    */
 }
 
 buffer_errors circular_buf_get(cbuf_handle_t cbuf, uint8_t * data) //pop
@@ -248,22 +143,7 @@ buffer_errors circular_buf_get(cbuf_handle_t cbuf, uint8_t * data) //pop
     	cbuf->count--;
     	return buffer_success;
     }
- /*   assert(cbuf && data && cbuf->buffer);
-
-    int r = -1;
-
-    if(!circular_buf_empty(cbuf))
-    {
-        *data = cbuf->buffer[cbuf->tail];
-    //    retreat_pointer(cbuf);
-    	assert(cbuf);
-
-    	cbuf->full = false;
-    	cbuf->tail = (cbuf->tail + 1) % cbuf->max;
-
-        r = 0;
-    }
-
-    return r; */
 }
+
+
 

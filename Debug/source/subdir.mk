@@ -8,6 +8,8 @@ C_SRCS += \
 ../source/System.c \
 ../source/circularbuffer.c \
 ../source/count_characters.c \
+../source/led_control.c \
+../source/logger.c \
 ../source/mtb.c \
 ../source/rtc.c \
 ../source/semihost_hardfault.c \
@@ -20,6 +22,8 @@ OBJS += \
 ./source/System.o \
 ./source/circularbuffer.o \
 ./source/count_characters.o \
+./source/led_control.o \
+./source/logger.o \
 ./source/mtb.o \
 ./source/rtc.o \
 ./source/semihost_hardfault.o \
@@ -32,6 +36,8 @@ C_DEPS += \
 ./source/System.d \
 ./source/circularbuffer.d \
 ./source/count_characters.d \
+./source/led_control.d \
+./source/logger.d \
 ./source/mtb.d \
 ./source/rtc.d \
 ./source/semihost_hardfault.d \

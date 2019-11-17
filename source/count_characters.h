@@ -8,8 +8,12 @@
 #ifndef COUNT_CHARACTERS_H_
 #define COUNT_CHARACTERS_H_
 
+#include <stdio.h>
 #include <stdint.h>
+#include "uart.h"
+#include "logger.h"
 
-uint8_t * count_characters(char data);
+void count_characters(uint8_t char_data);
+void application_report(uint8_t charac);
 
 #endif /* COUNT_CHARACTERS_H_ */

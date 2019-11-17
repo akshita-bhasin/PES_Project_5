@@ -3,11 +3,12 @@
  *
  *  Created on: Nov 12, 2019
  *      Author: akshh
+ *      https://github.com/alexander-g-dean/ESF/blob/master/Code/Chapter_8/Serial-Demo/src/UART.c
  */
 
 #include "uart.h"
 
-#define UART_MAX_SIZE (4)
+#define UART_MAX_SIZE (40)
 
 cbuf_handle_t TxBuffer = NULL;
 cbuf_handle_t RxBuffer = NULL;
@@ -56,13 +57,12 @@ void Init_UART0(uint32_t baud_rate) {
 	// Send LSB first, do not invert received data
 	UART0->S2 = UART0_S2_MSBF(0) | UART0_S2_RXINV(0);
 
-#if USE_UART_INTERRUPTS
+#if UART_APPLICATION
 	// Enable interrupts. Listing 8.11 on p. 234
 	TxBuffer = circular_buf_init(UART_MAX_SIZE);
 	RxBuffer = circular_buf_init(UART_MAX_SIZE);
-	//Q_Init(&TxQ); // add circular buffer init for Tx
-	//Q_Init(&RxQ); // add circular buffer init for Rx
-
+#endif
+#if USE_UART_INTERRUPTS
 	NVIC_SetPriority(UART0_IRQn, 2); // 0, 1, 2, or 3
 	NVIC_ClearPendingIRQ(UART0_IRQn);
 	NVIC_EnableIRQ(UART0_IRQn);
@@ -83,17 +83,35 @@ void Init_UART0(uint32_t baud_rate) {
 
 void uart0_putchar(char ch)
 {
-//#if (USE_UART_INTERRUPTS == 0)
-		while (!(UART0->S1 & UART0_S1_TDRE_MASK));
-//#endif
+#if !USE_UART_INTERRUPTS
+	while(!(tx_available()));
+		//while (!(UART0->S1 & UART0_S1_TDRE_MASK));
+#endif
 		UART0->D = (uint8_t)ch;
 }
 
 uint8_t uart0_getchar(void) {
-//#if (USE_UART_INTERRUPTS == 0)
-		while (!(UART0->S1 & UART0_S1_RDRF_MASK));
-//#endif
+#if !USE_UART_INTERRUPTS
+	while(!(rx_available()));
+		//while (!(UART0->S1 & UART0_S1_RDRF_MASK));
+#endif
 		return UART0->D;
+}
+
+uint8_t tx_available(void)
+{
+	if (UART0->S1 & UART0_S1_TDRE_MASK)
+		return 1;
+	else
+		return 0;
+
+}
+uint8_t rx_available(void)
+{
+	if(UART0->S1 & UART0_S1_RDRF_MASK)
+		return 1;
+	else
+		return 0;
 }
 
 void Send_String_Poll(char * str) {
@@ -105,6 +123,7 @@ void Send_String_Poll(char * str) {
 
 void Send_String(uint8_t * str) {
 	// enqueue string
+	uint8_t data;
 	while (*str != '\0') { // copy characters up to null terminator
 		while(circular_buf_full(TxBuffer) == buffer_full)
 			;
@@ -116,6 +135,8 @@ void Send_String(uint8_t * str) {
 	}
 	// start transmitter if it isn't already running
 	if (!(UART0->C2 & UART0_C2_TIE_MASK)) {
+		if(circular_buf_get(TxBuffer, &data) == buffer_success)
+			UART0->D = data;
 		//UART0->D = Q_Dequeue(&TxQ);
 		UART0->C2 |= UART0_C2_TIE(1);
 	}
@@ -142,10 +163,12 @@ uint8_t	Get_Rx_Char(void) {
 	//return Q_Dequeue(&RxQ);
 }
 
+#if USE_UART_INTERRUPTS
 void UART0_IRQHandler(void) {
 	uint8_t chara, tx_read;
+#if UART_ECHO
 
-/*	if (UART0->S1 & UART0_S1_RDRF_MASK) {
+	if (UART0->S1 & UART0_S1_RDRF_MASK) {
 		chara = UART0->D;
 		UART0->C2 |= UART0_C2_TIE_MASK;
 		UART0->S1 &= ~UART0_S1_RDRF_MASK;
@@ -156,13 +179,14 @@ void UART0_IRQHandler(void) {
 		UART0->C2 &= ~UART0_C2_TIE_MASK;
 		UART0->S1 |= UART0_S1_RDRF_MASK;
 	}
-
+#endif
+/*
 	if ((UART0->C2 & UART0_C2_TIE_MASK) && // transmitter interrupt enabled
 				(UART0->S1 & UART0_S1_TDRE_MASK)) { // tx buffer empty
 				UART0->D = chara;
 				UART0->S1 |= UART0_S1_RDRF_MASK;
 	} */
-
+#if UART_APPLICATION
 	if (UART0->S1 & (UART_S1_OR_MASK |UART_S1_NF_MASK |
 		UART_S1_FE_MASK | UART_S1_PF_MASK)) {
 			// clear the error flags
@@ -198,9 +222,35 @@ void UART0_IRQHandler(void) {
 		}
 		UART0->S1 |= UART0_S1_RDRF_MASK;
 	}
+#endif
 }
+#endif
 
 uint8_t uart_echo(uint8_t * data)
+{
+	int_flag=0;
+#if USE_UART_INTERRUPTS
+	/*if((circular_buf_get(RxBuffer, data)) == buffer_success)
+	//if(cicular_buffer_put)
+	{
+		circular_buf_put2(TxBuffer, *data);
+		UART0->C2 |= UART0_C2_TIE_MASK; */
+		//circularbufferpush
+		int_flag=1;
+	//}
+#else
+	{
+		uint8_t ch;
+		ch = uart0_getchar();
+		* data = ch;
+		uart0_putchar(ch);
+		int_flag=1;
+	}
+#endif
+	return int_flag;
+}
+
+uint8_t uart_application(uint8_t * data)
 {
 	int_flag=0;
 #if USE_UART_INTERRUPTS
@@ -214,12 +264,36 @@ uint8_t uart_echo(uint8_t * data)
 	}
 #else
 	{
-		uint8_t ch;
-		ch = uart0_getchar();
-		* data = ch;
-		uart0_putchar(ch);
-		int_flag=0;
+		uint8_t chara, tx_read;
+		chara = uart0_getchar();
+		if(circular_buf_full(RxBuffer) == buffer_not_full) {// (!Q_Full(&RxQ)) { check if circular buffer not full
+				circular_buf_put2(RxBuffer, chara); // Q_Enqueue(&RxQ, ch); // dp push in circular buffer
+		} else {
+				// error - queue full.
+				// discard character
+		}
+
+		if((circular_buf_get(RxBuffer, data)) == buffer_success)
+		//if(cicular_buffer_put)
+		{
+			circular_buf_put2(TxBuffer, *data);
+		}
+
+
+		if(circular_buf_empty(TxBuffer) == buffer_not_empty) { // (!Q_Empty(&TxQ)) { //check if cicrular buffer not empty
+				if(circular_buf_get(TxBuffer, &tx_read) == buffer_success) {
+					uart0_putchar(tx_read);
+				//UART0->D = Q_Dequeue(&TxQ); // pop from buffer
+			} else {
+				// queue is empty so disable transmitter interrupt
+				UART0->C2 &= ~UART0_C2_TIE_MASK;
+			}
+			UART0->S1 |= UART0_S1_RDRF_MASK;
+		}
+		int_flag=1;
 	}
 #endif
 	return int_flag;
 }
+
+
