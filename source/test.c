@@ -18,7 +18,13 @@ void unit_test_cases(void)
 {
 	uint8_t a=1;
 	cbuf_handle_t test_buffer;
+
+	UCUNIT_TestcaseBegin("Testing circular buffer - init\r\n");
 	test_buffer= circular_buf_init(4);
+
+	UCUNIT_CheckIsNotNull(test_buffer);
+	UCUNIT_TestcaseEnd();
+
 	//Test case for allocate bytes
 	UCUNIT_TestcaseBegin("Testing circular buffer - put\r\n");
 	for(uint8_t i=0; i<4; i++)
@@ -42,6 +48,15 @@ void unit_test_cases(void)
 		UCUNIT_CheckIsEqual(circular_buf_put2(test_buffer, i), buffer_success);
 	}
 	UCUNIT_CheckIsEqual(circular_buf_put2(test_buffer, a), buffer_full);
+	UCUNIT_TestcaseEnd();
+
+	circular_buf_free(test_buffer);
+
+	UCUNIT_TestcaseBegin("Testing circular buffer free\r\n");
+	test_buffer = circular_buf_init(4);
+	UCUNIT_CheckIsEqual(circular_buf_free(test_buffer), buffer_freed);
+	UCUNIT_CheckIsNull(test_buffer);
+	UCUNIT_CheckIsNull(test_buffer->buffer);
 	UCUNIT_TestcaseEnd();
 	/*
 	I2C_write_byte(0x01, 0x62);

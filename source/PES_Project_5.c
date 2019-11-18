@@ -27,7 +27,7 @@ uint8_t int_flag = 0;
 uint8_t char_array[126];
 void delay(uint16_t num);
 
-char timestamp_format[100]; //report_format[1000],
+//char timestamp_format[100]; //report_format[1000],
 
 uint8_t interrupt = 0;
 uint32_t deciseconds = 0;
@@ -35,45 +35,45 @@ uint32_t deciseconds = 0;
 int main(void) {
 
 	uint8_t charac;
-	timestampt_t timestamp_value;
   	/* Init board hardware. */
     BOARD_InitBootPins();
     BOARD_InitBootClocks();
     BOARD_InitBootPeripherals();
     unit_test_cases();
   	/* Init FSL debug console. */
-//    BOARD_InitDebugConsole();
 
-    /*RTC_Init_Clock();
-    while(1)
-    {
-    	if (interrupt)
-    	{
-    	RTC_Time();
-    	interrupt = 0;
-    	}
-    } */
 
     Init_UART0(115200);
     SysTick_Config(48000000L/10L);
-    log_string("Hello World");
-    //Send_String_Poll("Hello World\n\r");
-    //Send_String("Hello World\n\r");
+#if USE_UART_INTERRUPTS
+   	Send_String("Hey There! Welcome to our PES Project 5 :) (interrupt based UART)\n\r");
+#else
+   	Send_String_Poll("Hey There! Welcome to our PES Project 5 :) (polling based UART)\n\r");
+#endif
+
+#if UART_ECHO
+#if USE_UART_INTERRUPTS
+    Send_String("Type string of characters, and just see them echo back\n\r");
+#else
+    Send_String_Poll("Type string of characters, and just see them echo back\n\r");
+#endif
+#endif
+#if UART_APPLICATION
+#if USE_UART_INTERRUPTS
+    Send_String("Type string of characters, press Enter when you want to see a report of the characters you've typed\n\r");
+#else
+    Send_String_Poll("Type string of characters, press Enter when you want to see a report of the characters you've typed\n\r");
+#endif
+#endif
 
     for(uint8_t i=0; i<126; i++)
     	char_array[i] = 0x0;
     while(1)
     {
-/*    	if((deciseconds % 6) == 0) {
-    		timestamp_value = get_timestamp();
-    		Send_String_Poll("Time from SysTick: \t\n\r");
-    		sprintf(timestamp_format,"Time from SysTick: \t%d: %d: %d: %d\n\r",  timestamp_value.hour, timestamp_value.minute, timestamp_value.second, timestamp_value.decisec);
-    		Send_String_Poll(timestamp_format);
-    		//deciseconds = 0;
-    	} */
 #if UART_ECHO
     	uart_echo(&charac);
 #endif
+
 #if UART_APPLICATION
 
     	if(uart_application(&charac) == 1)
@@ -81,22 +81,10 @@ int main(void) {
     		count_characters(charac);
     	}
     	application_report(charac);
-    	charac=0;
+    	//charac=0;
 
 #endif
-/*    	charac = uart0_getchar();
-    	uart0_putchar(charac); */
-//#endif
     }
 
     return 0 ;
-}
-
-void delay(uint16_t num)
-{
-	uint64_t numb = num * 1000*2.3;
-	while(numb != 0)
-	{
-		numb--;
-	}
 }

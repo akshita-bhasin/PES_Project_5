@@ -25,26 +25,38 @@ typedef enum
 
 typedef enum
 {
-	i2C_Init,
-	I2c_read_byte,
-	I2c_read_bytes,
-	I2c_write_byte,
-	I2c_write_bytes,
-	Get_TemperatureInC,
-	init_SysTick,
-	State_machine_1,
-	State_machine_2,
-	Temp_reading,
-	Average_temp,
-	Temp_alert,
-	Disconnect_device,
-	END,
+	init_UART0,
+	Uart0_getchar,
+	Uart0_putchar,
+	Tx_available,
+	Rx_available,
+	Uart0_rx_chars_available,
+	Uart0_get_rx_char,
+	send_String_Poll,
+	send_String,
+	Uart_echo,
+	Uart_application,
+	Circular_buf_init,
+	Circular_buf_free,
+	Circular_buf_reset,
+	Circular_buf_put2,
+	Circular_buf_get,
+	Circular_buf_empty,
+	Circular_buf_full,
+	Circular_buf_capacity,
+	Circular_buf_size,
+	Circular_buf_initialized,
+	Circular_buf_valid,
+	Circular_buffer_realloc,
+	Count_characters,
+	Application_report,
+	Get_timestamp,
 	Turn_on_LED_color
 }function_name;
 
 //function prototypes
-const char* get_func_name(function_name func_name);
-const char* get_log_level(log_level logLevel);
+char* get_func_name(function_name func_name);
+char* get_log_level(log_level logLevel);
 void log_string_detail(log_level logLevel, function_name func_name, char * str);
 
 // Log_integer – display an integer

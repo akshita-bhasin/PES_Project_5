@@ -13,9 +13,6 @@
 cbuf_handle_t TxBuffer = NULL;
 cbuf_handle_t RxBuffer = NULL;
 
-int getchar(void);
-int putchar(int c);
-
 extern uint8_t int_flag;
 
 void Init_UART0(uint32_t baud_rate) {
@@ -144,12 +141,13 @@ void Send_String(uint8_t * str) {
 
 bool uart0_rx_chars_available(void)
 {
-	return (UART0->S1 & UART0_S1_TDRE_MASK);
+	return circular_buf_size(RxBuffer);
 }
 
 bool uart0_get_rx_char(void)
 {
-	return (UART0->S1 & UART0_S1_RDRF_MASK);
+	uint8_t data;
+	return circular_buf_get(RxBuffer, &data);
 }
 
 uint32_t Rx_Chars_Available(void) {

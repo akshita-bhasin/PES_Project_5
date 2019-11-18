@@ -12,6 +12,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include "logger.h"
 
 typedef struct {
 	uint8_t* buffer;
@@ -34,7 +35,9 @@ typedef enum
     buffer_success,
 	buffer_freed,
 	buffer_valid,
-	buffer_invalid
+	buffer_invalid,
+	buffer_realloc_success,
+	buffer_realloc_fail
 }buffer_errors;
 
 //typedef struct circ_bbuf_t circ_bbuf_t;
@@ -79,9 +82,9 @@ buffer_errors circular_buf_size(cbuf_handle_t cbuf);
 
 buffer_errors circular_buf_initialized(cbuf_handle_t cbuf);
 
-buffer_errors circular_buf_initialized(cbuf_handle_t cbuf);
-
 buffer_errors circular_buf_valid(cbuf_handle_t cbuf);
+
+buffer_errors circular_buffer_realloc(cbuf_handle_t cbuf, size_t newSize);
 
 
 #endif /* CIRCULARBUFFER_H_ */
