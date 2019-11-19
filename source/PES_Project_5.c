@@ -1,8 +1,9 @@
 /**
- * @file    PES_Project_5.c
- * @brief   Application entry point.
+ * file:    PES_Project_5.c
+ * author : Akshita Bhasin & Madhukar Arora
+ * brief:   Application entry point.
+ * created on: Nov 11, 2019
  */
-
 #include <stdio.h>
 #include "board.h"
 #include "peripherals.h"
@@ -72,10 +73,12 @@ int main(void) {
 			char_array[i] = 0x0;
 		while(1)
 		{
+//when in echo mode
 #if UART_ECHO
 			uart_echo(&charac);
 #endif
 
+//when in application mode
 #if UART_APPLICATION
 
 			if(uart_application(&charac) == 1)

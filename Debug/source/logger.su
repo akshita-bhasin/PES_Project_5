@@ -1,6 +1,6 @@
 logger.c:19:6:log_string_detail	48	static
-logger.c:58:6:log_string	40	static
-logger.c:80:6:log_char	40	static
-logger.c:107:6:log_integer	136	static
-logger.c:144:7:get_func_name	16	static
-logger.c:293:7:get_log_level	16	static
+logger.c:59:6:log_string	40	static
+logger.c:91:6:log_char	40	static
+logger.c:127:6:log_integer	136	static
+logger.c:172:7:get_func_name	16	static
+logger.c:321:7:get_log_level	16	static

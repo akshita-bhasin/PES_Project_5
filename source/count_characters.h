@@ -1,8 +1,8 @@
 /*
- * count_characters.h
- *
- *  Created on: Nov 14, 2019
- *      Author: akshh
+ * File : count_characters.h
+ * Created on: Nov 14, 2019
+ * Author: Akshita Bhasin & Madhukar Arora
+ * Brief : Contains header files for application mode implementation
  */
 
 #ifndef COUNT_CHARACTERS_H_

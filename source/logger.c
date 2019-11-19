@@ -2,7 +2,7 @@
  * @File Name  : logger.c
  * @Brief : contains logger implementation
  * @Author : Akshita Bhasin and Madhukar Arora
- * @Created On : 11/1/2019
+ * @Created On : 11/10/2019
  */
 
 #include "logger.h"
@@ -40,7 +40,8 @@ void log_string_detail(log_level logLevel, function_name func_name, char * str)
 	Send_String_Poll(str);
 	Send_String_Poll("\n\r");
 #endif
-#else if UART_ECHO
+#endif
+#if UART_ECHO
 	Send_String_Poll("\n\r");
 	Send_String_Poll(log);
 	Send_String_Poll(func);
@@ -63,7 +64,8 @@ void log_string(char * str)
 #else
 	Send_String_Poll(str);
 #endif
-#else if UART_ECHO
+#endif
+#if UART_ECHO
 	Send_String_Poll(str);
 #endif
 	timestampt_t timestamp_value;
@@ -75,7 +77,8 @@ void log_string(char * str)
 #else
  	Send_String_Poll(timestamp_format);
 #endif
-#else if UART_ECHO
+#endif
+#if UART_ECHO
  	Send_String_Poll(timestamp_format);
 #endif
 }

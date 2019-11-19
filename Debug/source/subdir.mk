@@ -10,7 +10,6 @@ C_SRCS += \
 ../source/count_characters.c \
 ../source/led_control.c \
 ../source/logger.c \
-../source/mode.c \
 ../source/mtb.c \
 ../source/semihost_hardfault.c \
 ../source/test.c \
@@ -24,7 +23,6 @@ OBJS += \
 ./source/count_characters.o \
 ./source/led_control.o \
 ./source/logger.o \
-./source/mode.o \
 ./source/mtb.o \
 ./source/semihost_hardfault.o \
 ./source/test.o \
@@ -38,7 +36,6 @@ C_DEPS += \
 ./source/count_characters.d \
 ./source/led_control.d \
 ./source/logger.d \
-./source/mode.d \
 ./source/mtb.d \
 ./source/semihost_hardfault.d \
 ./source/test.d \

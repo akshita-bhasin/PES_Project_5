@@ -1,9 +1,9 @@
 /*
- * uart.c
- *
- *  Created on: Nov 12, 2019
- *      Author: akshh
- *      https://github.com/alexander-g-dean/ESF/blob/master/Code/Chapter_8/Serial-Demo/src/UART.c
+ * File : uart.c
+ * Created on: Nov 12, 2019
+ * Author: Akshita Bhasin & Madhukar Arora
+ * Brief : Contains code for UART Communication
+ * Leveraged Code : https://github.com/alexander-g-dean/ESF/blob/master/Code/Chapter_8/Serial-Demo/src/UART.c
  */
 
 #include "uart.h"
@@ -17,9 +17,16 @@ extern uint8_t int_flag;
 extern log_level log_level_a;
 uint8_t while_flag=0;
 
+
+/*
+ * function name : Init_UART0
+ * parameters : baud_rate - baud rate value
+ * return type : void
+ * brief : initializes the UART0 Module on KL25Z
+ */
 void Init_UART0(uint32_t baud_rate) {
 	uint16_t sbr;
-	uint8_t temp;
+	//uint8_t temp;
 	turn_on_led_color('B');
 
 	// Enable clock gating for UART0 and Port A
@@ -100,11 +107,17 @@ void Init_UART0(uint32_t baud_rate) {
 	UART0->C2 |= UART0_C2_RE(1) | UART0_C2_TE(1);
 
 	// Clear the UART RDRF flag
-	temp = UART0->D;
+	//temp = UART0->D;
 	UART0->S1 &= ~UART0_S1_RDRF_MASK;
 
 }
 
+/*
+ * function name : uart0_putchar
+ * parameters : ch - character to be transmited
+ * return type : void
+ * brief : receives a character and stores in UART data register
+ */
 void uart0_putchar(char ch)
 {
 #if !USE_UART_INTERRUPTS
@@ -114,6 +127,12 @@ void uart0_putchar(char ch)
 	turn_on_led_color('G');
 }
 
+/*
+ * function name : uart0_getchar
+ * parameters : void
+ * return type : uint8_t - returns the data
+ * brief : transmits the character in UART data register
+ */
 uint8_t uart0_getchar(void) {
 	turn_on_led_color('B');
 #if !USE_UART_INTERRUPTS
@@ -122,6 +141,12 @@ uint8_t uart0_getchar(void) {
 	return UART0->D;
 }
 
+/*
+ * function name : tx_available
+ * parameters : void
+ * return type : uint8_t - returns the if transmission buffer is available or not
+ * brief : checks the transmission buffer and returns its status
+ */
 uint8_t tx_available(void)
 {
 	if (UART0->S1 & UART0_S1_TDRE_MASK)
@@ -130,6 +155,13 @@ uint8_t tx_available(void)
 		return 0;
 
 }
+
+/*
+ * function name : rx_available
+ * parameters : void
+ * return type : uint8_t - returns the if receive buffer is available or not
+ * brief : checks the receive buffer and returns its status
+ */
 uint8_t rx_available(void)
 {
 	if(UART0->S1 & UART0_S1_RDRF_MASK)
@@ -138,6 +170,12 @@ uint8_t rx_available(void)
 		return 0;
 }
 
+/*
+ * function name : Send_String_Poll
+ * parameters : char * str - pointer to a string
+ * return type : void
+ * brief : output characters till null character in polling mode
+ */
 void Send_String_Poll(char * str) {
 	// enqueue string
 	while (*str != '\0') { // Send characters up to null terminator
@@ -145,6 +183,12 @@ void Send_String_Poll(char * str) {
 	}
 }
 
+/*
+ * function name : Send_String
+ * parameters : uint8_t * str - pointer to a string
+ * return type : void
+ * brief : output characters till null character
+ */
 void Send_String(uint8_t * str) {
 	// enqueue string
 	uint8_t data;
@@ -162,18 +206,35 @@ void Send_String(uint8_t * str) {
 	}
 }
 
+/*
+ * function name : uart0_rx_chars_available
+ * parameters : void
+ * return type : bool
+ * brief : returns if character available to read from buffer
+ */
 bool uart0_rx_chars_available(void)
 {
 	return circular_buf_size(RxBuffer);
 }
 
+/*
+ * function name : uart0_get_rx_char
+ * parameters : void
+ * return type : bool
+ * brief : returns true if character read from circular buffer
+ */
 bool uart0_get_rx_char(void)
 {
 	uint8_t data;
 	return circular_buf_get(RxBuffer, &data);
 }
 
-
+/*
+ * function name : uart0_irqhandler
+ * parameters : void
+ * return type : void
+ * brief : interrupt service routine for UART 0
+ */
 #if USE_UART_INTERRUPTS
 void UART0_IRQHandler(void) {
 	uint8_t chara, tx_read;
@@ -209,10 +270,10 @@ void UART0_IRQHandler(void) {
 		turn_on_led_color('B');
 		// received a character
 		chara = UART0->D;
-		if(circular_buf_full(RxBuffer) == buffer_not_full) {// (!Q_Full(&RxQ)) { check if circular buffer not full
-			circular_buf_put2(&RxBuffer, chara); // Q_Enqueue(&RxQ, ch); // dp push in circular buffer
+		if(circular_buf_full(RxBuffer) == buffer_not_full) {// check if circular buffer not full
+			circular_buf_put2(&RxBuffer, chara); // do push in circular buffer
 		} else {
-			//log_string_detail(log_level_a, Uart_application, "Interrupt: Circular buffer is full, remove some items if needed");
+			log_string_detail(log_level_a, Uart_application, "Interrupt: Circular buffer is full, remove some items if needed");
 		}
 		UART0->S1 &= ~UART0_S1_RDRF_MASK;
 		UART0->C2 |= UART0_C2_TIE_MASK;
@@ -221,11 +282,11 @@ void UART0_IRQHandler(void) {
 			(UART0->S1 & UART0_S1_TDRE_MASK) ) { // tx buffer empty
 
 		turn_on_led_color('G');
-		if(circular_buf_empty(TxBuffer) == buffer_not_empty) { // (!Q_Empty(&TxQ)) { //check if cicrular buffer not empty
+		if(circular_buf_empty(TxBuffer) == buffer_not_empty) { //check if circular buffer not empty
 			if(circular_buf_get(TxBuffer, &tx_read) == buffer_success)
 				UART0->D = tx_read;
 		} else {
-			//log_string_detail(log_level_a, Uart_application, "Interrupt: Circular buffer is empty, add some items if needed");
+			log_string_detail(log_level_a, Uart_application, "Interrupt: Circular buffer is empty, add some items if needed");
 			// queue is empty so disable transmitter interrupt
 			UART0->C2 &= ~UART0_C2_TIE_MASK;
 		}
@@ -235,6 +296,12 @@ void UART0_IRQHandler(void) {
 }
 #endif
 
+/*
+ * function name : uart_echo
+ * parameters : void
+ * return type : uint8_t
+ * brief : runs the UART in echo mode
+ */
 uint8_t uart_echo(uint8_t * data)
 {
 	int_flag=0;
@@ -252,6 +319,12 @@ uint8_t uart_echo(uint8_t * data)
 	return int_flag;
 }
 
+/*
+ * function name : uart_application
+ * parameters : uint8_t * data
+ * return type : uint8_t
+ * brief : runs the UART in application mode
+ */
 uint8_t uart_application(uint8_t * data)
 {
 	int_flag=0;

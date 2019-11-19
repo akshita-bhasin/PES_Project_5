@@ -2,7 +2,7 @@
  *@File Name : led_control.c
  *@Brief: Source file contains code for controlling the RGB LED
  *        on the FRDM KL25Z Board
- *Created on: Oct 29, 2019
+ *Created on: Nov 10, 2019
  *Author: Akshita Bhasin & Madhukar Arora
  */
 

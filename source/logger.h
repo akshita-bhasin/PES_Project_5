@@ -1,8 +1,8 @@
 /*
- * @File  : logger.h
- * @Brief : contains function prototypes and includes for logger implementation
- * @Author : Akshita Bhasin and Madhukar Arora
- * @Created On : 11/1/2019
+ * File  : logger.h
+ * Brief : contains function prototypes and includes for logger implementation
+ * Author : Akshita Bhasin and Madhukar Arora
+ * Created On : 11/18/2019
  */
 
 

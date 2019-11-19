@@ -1,8 +1,9 @@
 /*
- * uart.h
- *
- *  Created on: Nov 12, 2019
- *      Author: akshh
+ * File : uart.h
+ * Created on: Nov 12, 2019
+ * Author: Akshita Bhasin & Madhukar Arora
+ * Brief : Contains header files for UART Communication
+ * Leveraged Code : https://github.com/alexander-g-dean/ESF/blob/master/Code/Chapter_8/Serial-Demo/src/UART.c
  */
 
 #ifndef UART_H_

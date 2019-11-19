@@ -1,21 +1,20 @@
 /* @file test.c
- * @brief Unit test cases for PES_Project4
+ * @brief Unit test cases for PES_Project5
  * @author : Akshita Bhasin and Madhukar Arora
- * @date : 11/03/2019
+ * @date : 11/10/2019
  * @version 1.0
  */
 
 #include "test.h"
 
+uint8_t a=1;
+
 /*
  Function Name: unit_test_cases
  Function arguments: void
  Function return type: void
- Brief: performs unit tests on various memory functions
+ Brief: calls various test case functions for the circular buffer
 */
-
-uint8_t a=1;
-
 void unit_test_cases(void)
 {
 	buffer_init();
@@ -28,6 +27,12 @@ void unit_test_cases(void)
 	buffer_realloc();
 }
 
+/*
+ Function Name: buffer_init
+ Function arguments: void
+ Function return type: void
+ Brief: testing buffer initialization
+*/
 void buffer_init(void)
 {
 	cbuf_handle_t test_buffer;
@@ -39,6 +44,13 @@ void buffer_init(void)
 	circular_buf_free(test_buffer);
 }
 
+
+/*
+ Function Name: buffer_put
+ Function arguments: void
+ Function return type: void
+ Brief: testing adding an element to the circular buffer
+*/
 void buffer_put(void)
 {
 	cbuf_handle_t test_buffer;
@@ -54,6 +66,13 @@ void buffer_put(void)
 	circular_buf_free(test_buffer);
 }
 
+
+/*
+ Function Name: buffer_get
+ Function arguments: void
+ Function return type: void
+ Brief: testing removing an element from the circular buffer
+*/
 void buffer_get(void)
 {
 	cbuf_handle_t test_buffer;
@@ -69,6 +88,12 @@ void buffer_get(void)
 	circular_buf_free(test_buffer);
 }
 
+/*
+ Function Name: buffer_overfill
+ Function arguments: void
+ Function return type: void
+ Brief: testing full condition of the circular buffer
+*/
 void buffer_overfill(void)
 {
 	cbuf_handle_t test_buffer;
@@ -77,14 +102,22 @@ void buffer_overfill(void)
 	test_buffer= circular_buf_init(4);
 	for(uint8_t i=0; i<10; i++)
 	{
-		if(test_buffer->realloc_done == false)
+		if((test_buffer->realloc_done) == false)
+		{
 			UCUNIT_CheckIsEqual(circular_buf_put2(&test_buffer, i), buffer_success);
+		}
 	}
 	UCUNIT_CheckIsEqual(circular_buf_put2(&test_buffer, a), buffer_full);
 	UCUNIT_TestcaseEnd();
 	circular_buf_free(test_buffer);
 }
 
+/*
+ Function Name: buffer_overempty
+ Function arguments: void
+ Function return type: void
+ Brief: testing empty condition of the circular buffer
+*/
 void buffer_overempty(void)
 {
 	cbuf_handle_t test_buffer;
@@ -100,6 +133,12 @@ void buffer_overempty(void)
 	circular_buf_free(test_buffer);
 }
 
+/*
+ Function Name: buffer_data_push_pop
+ Function arguments: void
+ Function return type: void
+ Brief: testing if the added and removed element to the circular buffer are same
+*/
 void buffer_data_push_pop(void)
 {
 	cbuf_handle_t test_buffer;
@@ -114,6 +153,13 @@ void buffer_data_push_pop(void)
 	circular_buf_free(test_buffer);
 }
 
+
+/*
+ Function Name: buffer_free
+ Function arguments: void
+ Function return type: void
+ Brief: testing freeing of the circular buffer
+*/
 void buffer_free(void)
 {
 	cbuf_handle_t test_buffer;
@@ -126,6 +172,12 @@ void buffer_free(void)
 	circular_buf_free(test_buffer);
 }
 
+/*
+ Function Name: buffer_realloc
+ Function arguments: void
+ Function return type: void
+ Brief: reallocating the circular buffer
+*/
 void buffer_realloc(void)
 {
 	cbuf_handle_t test_buffer;

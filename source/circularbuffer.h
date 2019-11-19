@@ -1,10 +1,10 @@
 /*
- * circularbuffer.h
- *
- *  Created on: Nov 11, 2019
- *      Author: madhu
+ * File : circularbuffer.h
+ * Created on: Nov 11, 2019
+ * Author: Akshita Bhasin & Madhukar Arora
+ * Brief : Contains header files for circular buffer implementation
+ * Leveraged Code : https://embeddedartistry.com/blog/2017/05/17/creating-a-circular-buffer-in-c-and-c/
  */
-
 
 #ifndef CIRCULARBUFFER_H_
 #define CIRCULARBUFFER_H_

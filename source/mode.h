@@ -1,8 +1,8 @@
 /*
- * mode.h
- *
- *  Created on: Nov 19, 2019
- *      Author: akshh
+ * File : mode.h
+ * Author : Akshita Bhasin & Madhukar Arora
+ * Created on: Nov 18, 2019
+ * Brief : header file for critical section implementation
  */
 
 #ifndef MODE_H_

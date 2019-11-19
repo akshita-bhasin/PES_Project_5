@@ -1,8 +1,8 @@
 /*
- * timestamp.h
- *
- *  Created on: Nov 14, 2019
- *      Author: akshh
+ * File : timestamp.h
+ * Created on: Nov 14, 2019
+ * Author: Akshita Bhasin & Madhukar Arora
+ * Brief : Contains header files for timestamp implementation
  */
 
 #ifndef TIMESTAMP_H_
@@ -18,7 +18,6 @@ typedef struct {
     uint8_t decisec;
 }timestampt_t;
 
-//void Init_SysTick(void);
 timestampt_t get_timestamp(void);
 
 #endif /* TIMESTAMP_H_ */

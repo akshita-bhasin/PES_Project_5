@@ -1,9 +1,9 @@
 /*
- *@File Name : led_control.h
- *@Brief: Header file contains includes for controlling the RGB LED
- *        on the FRDM KL25Z Board and function prototypes
- *Created on: Oct 29, 2019
+ *File: led_control.h
+ *Created on: Nov 10, 2019
  *Author: Akshita Bhasin & Madhukar Arora
+ *Brief: Header file contains includes for controlling the RGB LED
+ *        on the FRDM KL25Z Board and function prototypes
  */
 
 

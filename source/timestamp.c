@@ -1,26 +1,30 @@
 /*
- * timestamp.c
- *
- *  Created on: Nov 14, 2019
- *      Author: akshh
+ * File : timestamp.c
+ * Created on: Nov 14, 2019
+ * Author: Akshita Bhasin & Madhukar Arora
+ * Brief : Contains code for timestamp implementation
  */
 
 #include "timestamp.h"
 
 extern uint32_t deciseconds;
 
-/*void Init_SysTick(void) {
-	SysTick->LOAD = (48000000L/160);
-	NVIC_SetPriority(SysTick_IRQn, 3);
-	SysTick->VAL=0;
-	SysTick->CTRL = SysTick_CTRL_TICKINT_Msk | SysTick_CTRL_ENABLE_Msk;
-} */
-
+/*
+ * File : timestamp.c
+ * Created on: Nov 14, 2019
+ * Author: Akshita Bhasin & Madhukar Arora
+ * Brief : Contains code for timestamp implementation
+ */
 void SysTick_Handler(void) {
 	deciseconds++;
-//	PRINTF("\r\nSysTick: %d\r\n", systick_count);
 }
 
+/*
+ * function name : get_timestamp
+ * parameters : void
+ * return type : timestamp_t - returns a structure
+ * brief : function to get time elapsed since the start of the application
+ */
 timestampt_t get_timestamp(void)
 {
 	timestampt_t timestamp_value;
