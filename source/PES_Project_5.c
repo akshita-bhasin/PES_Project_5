@@ -23,11 +23,10 @@
  * @brief   Application entry point.
  */
 
+extern log_level log_level_a;
 uint8_t int_flag = 0;
 uint8_t char_array[126];
 void delay(uint16_t num);
-
-//char timestamp_format[100]; //report_format[1000],
 
 uint8_t interrupt = 0;
 uint32_t deciseconds = 0;
@@ -39,52 +38,55 @@ int main(void) {
     BOARD_InitBootPins();
     BOARD_InitBootClocks();
     BOARD_InitBootPeripherals();
-    unit_test_cases();
+  	/* Init FSL debug console. */
+    BOARD_InitDebugConsole();
+    Init_UART0(115200);
+    if(log_level_a == 0)
+    	unit_test_cases();
   	/* Init FSL debug console. */
 
-
-    Init_UART0(115200);
-    SysTick_Config(48000000L/10L);
-#if USE_UART_INTERRUPTS
-   	Send_String("Hey There! Welcome to our PES Project 5 :) (interrupt based UART)\n\r");
-#else
-   	Send_String_Poll("Hey There! Welcome to our PES Project 5 :) (polling based UART)\n\r");
-#endif
+    else if((log_level_a == 1) || (log_level_a == 2))
+	{
+		SysTick_Config(48000000L/10L);
 
 #if UART_ECHO
 #if USE_UART_INTERRUPTS
-    Send_String("Type string of characters, and just see them echo back\n\r");
+		Send_String_Poll("Hey There! Welcome to our PES Project 5 :) (interrupt based UART)\n\r");
 #else
-    Send_String_Poll("Type string of characters, and just see them echo back\n\r");
+		Send_String_Poll("Hey There! Welcome to our PES Project 5 :) (polling based UART)\n\r");
 #endif
-#endif
-#if UART_APPLICATION
-#if USE_UART_INTERRUPTS
-    Send_String("Type string of characters, press Enter when you want to see a report of the characters you've typed\n\r");
-#else
-    Send_String_Poll("Type string of characters, press Enter when you want to see a report of the characters you've typed\n\r");
-#endif
+		Send_String_Poll("Type string of characters, and just see them echo back\n\r");
 #endif
 
-    for(uint8_t i=0; i<126; i++)
-    	char_array[i] = 0x0;
-    while(1)
-    {
+#if UART_APPLICATION
+#if USE_UART_INTERRUPTS
+		Send_String("Hey There! Welcome to our PES Project 5 :) (interrupt based UART)\n\r");
+#else
+		Send_String_Poll("Hey There! Welcome to our PES Project 5 :) (polling based UART)\n\r");
+#endif
+		Send_String_Poll("Type string of characters, press Enter when you want to see a report of the characters you've typed\n\r");
+
+#endif
+
+		for(uint8_t i=0; i<126; i++)
+			char_array[i] = 0x0;
+		while(1)
+		{
 #if UART_ECHO
-    	uart_echo(&charac);
+			uart_echo(&charac);
 #endif
 
 #if UART_APPLICATION
 
-    	if(uart_application(&charac) == 1)
-    	{
-    		count_characters(charac);
-    	}
-    	application_report(charac);
-    	//charac=0;
+			if(uart_application(&charac) == 1)
+			{
+				count_characters(charac);
+			}
+			application_report(charac);
+    	charac=0;
 
 #endif
-    }
-
+		}
+	}
     return 0 ;
 }

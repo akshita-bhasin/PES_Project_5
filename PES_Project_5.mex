@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding= "UTF-8" ?>
-<configuration name="MKL25Z128xxx4" version="1.6" xsi:schemaLocation="http://mcuxpresso.nxp.com/XSD/mex_configuration_1.6 http://mcuxpresso.nxp.com/XSD/mex_configuration_1.6.xsd" uuid="848ce80f-32a8-4b89-8642-a29149b3a115" xmlns="http://mcuxpresso.nxp.com/XSD/mex_configuration_1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<configuration name="MKL25Z128xxx4" version="1.6" xsi:schemaLocation="http://mcuxpresso.nxp.com/XSD/mex_configuration_1.6 http://mcuxpresso.nxp.com/XSD/mex_configuration_1.6.xsd" uuid="6302dcc0-771a-4224-8399-eeec8ac590b1" xmlns="http://mcuxpresso.nxp.com/XSD/mex_configuration_1.6" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <common>
       <processor>MKL25Z128xxx4</processor>
       <package>MKL25Z128VLK4</package>
@@ -17,6 +17,10 @@
    </preferences>
    <tools>
       <pins name="Pins" version="6.0" enabled="true" update_project_code="true">
+         <generated_project_files>
+            <file path="board/pin_mux.c" update_enabled="true"/>
+            <file path="board/pin_mux.h" update_enabled="true"/>
+         </generated_project_files>
          <pins_profile>
             <processor_version>6.0.0</processor_version>
          </pins_profile>
@@ -48,11 +52,18 @@
                <pins>
                   <pin peripheral="UART0" signal="TX" pin_num="28" pin_signal="TSI0_CH3/PTA2/UART0_TX/TPM2_CH1"/>
                   <pin peripheral="UART0" signal="RX" pin_num="27" pin_signal="TSI0_CH2/PTA1/UART0_RX/TPM2_CH0"/>
+                  <pin peripheral="GPIOB" signal="GPIO, 19" pin_num="54" pin_signal="TSI0_CH12/PTB19/TPM2_CH1"/>
+                  <pin peripheral="GPIOB" signal="GPIO, 18" pin_num="53" pin_signal="TSI0_CH11/PTB18/TPM2_CH0"/>
+                  <pin peripheral="GPIOD" signal="GPIO, 1" pin_num="74" pin_signal="ADC0_SE5b/PTD1/SPI0_SCK/TPM0_CH1"/>
                </pins>
             </function>
          </functions_list>
       </pins>
       <clocks name="Clocks" version="6.0" enabled="true" update_project_code="true">
+         <generated_project_files>
+            <file path="board/clock_config.c" update_enabled="true"/>
+            <file path="board/clock_config.h" update_enabled="true"/>
+         </generated_project_files>
          <clocks_profile>
             <processor_version>6.0.0</processor_version>
          </clocks_profile>
@@ -171,12 +182,14 @@
          </clock_configurations>
       </clocks>
       <dcdx name="DCDx" version="2.0" enabled="false" update_project_code="true">
+         <generated_project_files/>
          <dcdx_profile>
             <processor_version>N/A</processor_version>
          </dcdx_profile>
          <dcdx_configurations/>
       </dcdx>
       <periphs name="Peripherals" version="6.0" enabled="false" update_project_code="true">
+         <generated_project_files/>
          <peripherals_profile>
             <processor_version>N/A</processor_version>
          </peripherals_profile>
@@ -184,6 +197,7 @@
          <components/>
       </periphs>
       <tee name="TEE" version="1.0" enabled="false" update_project_code="true">
+         <generated_project_files/>
          <tee_profile>
             <processor_version>N/A</processor_version>
          </tee_profile>

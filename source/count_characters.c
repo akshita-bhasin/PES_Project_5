@@ -7,6 +7,7 @@
 
 #include "count_characters.h"
 
+extern log_level log_level_a;
 uint8_t character_count[126];
 char report_format[1000];
 
@@ -28,13 +29,8 @@ void application_report(uint8_t charac)
 {
 	if(charac == 13)
 	{
-		log_string_detail(Status, Application_report, "\n\rApplication mode Character report");
-#ifdef NORMAL
-		log_string_detail(Status, Application_report, "\n\rApplication mode Character report");
-#endif
-#ifdef DEBUG_LOG
-		log_string_detail(Debug, Application_report, "\n\rApplication mode Character report");
-#endif
+		if((log_level_a == 1) || (log_level_a == 2))
+			log_string_detail(log_level_a, Application_report, "\n\rApplication mode Character report");
 
 		for(uint8_t i=0; i<126; i++)
 		{
@@ -52,13 +48,9 @@ void application_report(uint8_t charac)
 					sprintf(report_format, "%c - %d; ", (i+34), character_count[i]);
 #if USE_UART_INTERRUPTS
 				Send_String(report_format);
-				Send_String("\n\r");
 #else
 				Send_String_Poll(report_format);
-				Send_String_Poll("\n\r");
-
 #endif
-				//Send_String(report_format);
 			}
 		}
 	}

@@ -19,4 +19,5 @@ board \
 drivers \
 source \
 startup \
+utilities \
 

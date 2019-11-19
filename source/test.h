@@ -19,4 +19,11 @@
 //#endif
 
 void unit_test_cases(void);
-void delay_loop(uint16_t num);
+void buffer_init(void);
+void buffer_put(void);
+void buffer_get(void);
+void buffer_overfill(void);
+void buffer_overempty(void);
+void buffer_data_push_pop(void);
+void buffer_free(void);
+void buffer_realloc(void);

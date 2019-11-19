@@ -13,14 +13,15 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include "logger.h"
+#include "mode.h"
 
 typedef struct {
 	uint8_t* buffer;
 	uint8_t * head;
 	uint8_t * tail;
-	uint8_t max; //of the buffer
+	uint16_t max; //of the buffer
 	size_t count;
-	bool full;
+	bool realloc_done;
 }circ_bbuf_t;
 
 typedef enum
@@ -56,13 +57,9 @@ buffer_errors circular_buf_free(cbuf_handle_t cbuf);
 /// Reset the circular buffer to empty, head == tail
 void circular_buf_reset(cbuf_handle_t cbuf);
 
-/// Put version 1 continues to add data if the buffer is full
-/// Old data is overwritten
-//void circular_buf_put(cbuf_handle_t cbuf, uint8_t data);
-
 /// Put Version 2 rejects new data if the buffer is full
 /// Returns 0 on success, -1 if buffer is full
-buffer_errors circular_buf_put2(cbuf_handle_t cbuf, uint8_t data);
+buffer_errors circular_buf_put2(cbuf_handle_t * cbuf, uint8_t data);
 
 /// Retrieve a value from the buffer
 /// Returns 0 on success, -1 if the buffer is empty
@@ -84,7 +81,7 @@ buffer_errors circular_buf_initialized(cbuf_handle_t cbuf);
 
 buffer_errors circular_buf_valid(cbuf_handle_t cbuf);
 
-buffer_errors circular_buffer_realloc(cbuf_handle_t cbuf, size_t newSize);
+buffer_errors circular_buffer_realloc(cbuf_handle_t * cbuf, size_t newSize);
 
 
 #endif /* CIRCULARBUFFER_H_ */

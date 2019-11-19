@@ -7,7 +7,7 @@ source/led_control.o source/led_control.d: ../source/led_control.c \
  ../drivers/fsl_common.h ../drivers/fsl_gpio.h ../board/peripherals.h \
  ../board/pin_mux.h ../board/clock_config.h ../CMSIS/MKL25Z4.h \
  ../source/logger.h ../source/timestamp.h ../source/uart.h \
- ../source/circularbuffer.h
+ ../source/circularbuffer.h ../source/mode.h
 
 ../source/led_control.h:
 
@@ -54,3 +54,5 @@ source/led_control.o source/led_control.d: ../source/led_control.c \
 ../source/uart.h:
 
 ../source/circularbuffer.h:
+
+../source/mode.h:

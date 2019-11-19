@@ -7,8 +7,9 @@ source/PES_Project_5.o source/PES_Project_5.d: ../source/PES_Project_5.c \
  ../drivers/fsl_common.h ../drivers/fsl_gpio.h ../board/peripherals.h \
  ../board/pin_mux.h ../board/clock_config.h ../CMSIS/MKL25Z4.h \
  ../source/logger.h ../source/timestamp.h ../source/uart.h \
- ../source/circularbuffer.h ../source/count_characters.h ../source/test.h \
- ../source/uCUnit.h ../source/System.h
+ ../source/circularbuffer.h ../source/mode.h ../source/led_control.h \
+ ../source/count_characters.h ../source/test.h ../source/uCUnit.h \
+ ../source/System.h
 
 ../board/board.h:
 
@@ -53,6 +54,10 @@ source/PES_Project_5.o source/PES_Project_5.d: ../source/PES_Project_5.c \
 ../source/uart.h:
 
 ../source/circularbuffer.h:
+
+../source/mode.h:
+
+../source/led_control.h:
 
 ../source/count_characters.h:
 

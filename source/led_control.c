@@ -16,9 +16,8 @@
  */
 void delay_led(uint16_t num)
 {
-	uint32_t num1 = num*100;
-	while(num1!=0)
-		num1--;
+	while(num!=0)
+		num--;
 }
 
 /*
@@ -49,7 +48,7 @@ void turn_on_led_color(char color)
 #ifdef TEST
 		log_string_detail(Test, Turn_on_LED_color, "LED RED in Test Mode");
 #endif
-		delay_led(20000);
+		delay_led(2000);
 	}
 	else if(color == 'B') {
     	LED_RED_OFF(); /*!< Turn off target LED_RED */
@@ -64,7 +63,7 @@ void turn_on_led_color(char color)
 #ifdef TEST
 		log_string_detail(Test, Turn_on_LED_color, "LED BLUE in Test Mode");
 #endif
-    	delay_led(20000);
+    	delay_led(2000);
 	}
 	else if(color == 'G') {
 		LED_RED_OFF(); /*!< Turn off target LED_RED */
@@ -79,6 +78,6 @@ void turn_on_led_color(char color)
 #ifdef TEST
 		log_string_detail(Test, Turn_on_LED_color, "LED GREEN in Test Mode");
 #endif
-		delay_led(20000);
+		delay_led(2000);
 	}
 }

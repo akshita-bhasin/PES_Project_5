@@ -96,7 +96,7 @@ void System_Safestate(void)
 void System_WriteString(char * msg)
 {
 	printf(msg);
-	printf("\r");
+	printf("\n\r");
 }
 
 void System_WriteInt(int n)

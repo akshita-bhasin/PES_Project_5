@@ -8,6 +8,8 @@
 
 #include "circularbuffer.h"
 
+extern log_level log_level_a;
+
 cbuf_handle_t circular_buf_init(size_t size)
 {
 	uint8_t* buffer_init;
@@ -18,7 +20,7 @@ cbuf_handle_t circular_buf_init(size_t size)
 	cbuf->head = buffer_init;
 	cbuf->tail = buffer_init;
 	cbuf->count = 0;
-	cbuf->full = false;
+	cbuf->realloc_done = false;
 
 	return cbuf;
 }
@@ -29,12 +31,12 @@ void circular_buf_reset(cbuf_handle_t cbuf)
     cbuf->head = cbuf->buffer;
     cbuf->tail = cbuf->buffer;
     cbuf->count = 0;
-    cbuf->full = false;
+    cbuf->realloc_done = false;
 }
 
 buffer_errors circular_buf_free(cbuf_handle_t cbuf)
 {
-	free(cbuf->buffer);
+	//free(cbuf->buffer);
 	free(cbuf);
 	return buffer_freed;
 }
@@ -99,25 +101,33 @@ buffer_errors circular_buf_size(cbuf_handle_t cbuf)
     }
 }
 
-buffer_errors circular_buf_put2(cbuf_handle_t cbuf, uint8_t data) //push
+buffer_errors circular_buf_put2(cbuf_handle_t * cbuf, uint8_t data) //push
 {
-
+	cbuf_handle_t cbuf1 = *cbuf;
     if(cbuf == NULL)
     	return buffer_null;
-    else if(circular_buf_full(cbuf) == buffer_full)//cbuf->count == cbuf->max)
-    		return buffer_full;
-    else if(cbuf->head >= ((cbuf->buffer)+(cbuf->max)))
+    else if(circular_buf_full(*cbuf) == buffer_full) //cbuf->count == cbuf->max)
     {
-    	*(cbuf->head) = data;
-    	cbuf->head = cbuf->buffer;
-    	cbuf->count++;
+    	if(circular_buffer_realloc(*cbuf, (cbuf1->max)*3) == buffer_realloc_success)
+    		cbuf1 = *cbuf;
+    	return buffer_full;
+    }
+    else if(cbuf1->head >= ((cbuf1->buffer)+(cbuf1->max)))
+    {
+    	START_CRITICAL;
+    	*(cbuf1->head) = data;
+    	cbuf1->head = cbuf1->buffer;
+    	cbuf1->count++;
+    	END_CRITICAL;
     	return buffer_success;
     }
     else
     {
-    	*(cbuf->head) = data;
-    	cbuf->head++;
-    	cbuf->count++;
+    	START_CRITICAL;
+    	*(cbuf1->head) = data;
+    	cbuf1->head++;
+    	cbuf1->count++;
+    	END_CRITICAL;
     	return buffer_success;
     }
 
@@ -132,31 +142,40 @@ buffer_errors circular_buf_get(cbuf_handle_t cbuf, uint8_t * data) //pop
     		return buffer_empty;
     else if(cbuf->tail >= ((cbuf->buffer)+(cbuf->max)))
     {
+    	START_CRITICAL;
     	*data = *(cbuf->tail);
     	cbuf->tail = cbuf->buffer;
     	cbuf->count--;
+    	END_CRITICAL;
     	return buffer_success;
     }
     else
     {
+    	START_CRITICAL;
     	*data = *(cbuf->tail);
     	cbuf->tail++;
     	cbuf->count--;
+    	END_CRITICAL;
     	return buffer_success;
     }
 }
 
-buffer_errors circular_buffer_realloc(cbuf_handle_t cbuf, size_t newSize)
+buffer_errors circular_buffer_realloc(cbuf_handle_t * cbuf, size_t newSize)
 {
+	//used pointers to keep value of buffer when realloc called
 	uint8_t data;
-	if(circular_buf_full(cbuf) == buffer_full)
+	if(circular_buf_full(*cbuf) == buffer_full)
 	{
-		cbuf_handle_t buffer_realloc = circular_buf_init(newSize);
-		while(circular_buf_get(cbuf, &data) == buffer_success)
+		cbuf_handle_t buffer_realloc;
+		buffer_realloc = circular_buf_init(newSize);
+		while(circular_buf_get(*cbuf, &data) == buffer_success)
 			circular_buf_put2(buffer_realloc, data);
 
-		circular_buf_free(cbuf);
-		cbuf = buffer_realloc;
+		circular_buf_free(*cbuf);
+		*cbuf = buffer_realloc;
+		cbuf_handle_t cbuf1;
+		cbuf1 = *cbuf;
+		cbuf1->realloc_done = true;
 
 		return buffer_realloc_success;
 	}
@@ -164,37 +183,6 @@ buffer_errors circular_buffer_realloc(cbuf_handle_t cbuf, size_t newSize)
 	log_string("Realloc not done, cause buffer is not full yet");
 
 	return buffer_realloc_fail;
-
-//	uint8_t prev_size;
-//	if(cbuf->count == cbuf->max)
-//	{
-//		/* Reallocate the memory */
-//		uint8_t* buffer_realloc;
-//		buffer_realloc = (uint8_t*)realloc(cbuf->buffer, cbuf->max * 2);
-//		cbuf->buffer = buffer_realloc;
-//
-//		/* Ensure reallocation worked */
-//		if(circular_buf_valid(cbuf) == buffer_invalid)
-//			{
-//				log_string_detail(Debug, Circular_buffer_realloc, "Re-allocation Failed");
-//				return buffer_init_fail;
-//			}
-//
-//			/* Adjust values to reflect change */
-//			prev_size = cbuf->max;
-//			cbuf->max = 2  * cbuf->max;
-//
-//
-//			/*	TODO: Need to re-fill the buffer with what it had before */
-//
-//
-//			return buffer_success;
-//	}
-//	else
-//	{
-//		logString("Realloc not done, cause buffer still not full");
-//		return BUF_FAIL;
-//	}
 
 }
 
